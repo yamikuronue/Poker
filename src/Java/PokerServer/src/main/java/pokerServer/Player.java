@@ -87,7 +87,7 @@ public class Player implements StateObserver, ClientObserver {
 	/**
 	 * Add a card to the Player's hand. Should be called when dealing.  
 	 * @param card The card to add.
-	 */
+	 */	
 	public void addCardToHand(Card card) {
 		currentHand.add(card);
 	}
@@ -97,6 +97,14 @@ public class Player implements StateObserver, ClientObserver {
 	 */
 	public void resetHand() {
 		currentHand = new ArrayList<Card>();
+	}
+	
+	/**
+	 * Gets the player's hand, for verification and win validation purposes.
+	 * @return The player's current hand.
+	 */
+	public ArrayList<Card> getHand() {
+		return currentHand;
 	}
 	
 	@Override
