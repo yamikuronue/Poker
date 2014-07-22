@@ -2,19 +2,39 @@ package pokerServer;
 
 import java.util.ArrayList;
 
-import pokerServer.Card.Suit;
-
+/**
+ * Represents a single playing card. Also contains class methods to deal with decks of cards. 
+ * @author bgreen
+ *
+ */
 public class Card {
 
 	private Suit mySuit;
 	private String myValue;
 	
+	/**
+	 * The possible suits for a standard deck of French playing cards (the worldwide standard)
+	 * @author bgreen
+	 *
+	 */
 	public static enum Suit {
+		/** Hearts (♥), one of two red suits*/
 		HEARTS,
+		
+		/**Clubs (♣), one of two black suits*/
 		CLUBS,
+		
+		/**Spades (♠), one of two black suits*/
 		SPADES,
+		
+		/**Diamonds (♦), one of two red suits*/
 		DIAMONDS
 	}
+	
+	/**
+	 * Generates a fresh, unshuffled deck of playing cards. 
+	 * @return The deck, in ArrayList format. 
+	 */
 	public static ArrayList<Card> generateDeck() {
 		ArrayList<Card> deck = new ArrayList<Card>();
 		for (int i = 2; i <= 10; i++) {
@@ -51,14 +71,19 @@ public class Card {
 		return deck;
 	}
 
+	/**
+	 * Create a new card. A card has both a suit and a value. 
+	 * @param suit One of four French suits.
+	 * @param val Should either a numeric value between 2 and 10 inclusive, A for Ace, Q for Queen, J for Jack, or K for King
+	 */
 	public Card(Suit suit, String val) {
 		this.mySuit = suit;
 		
 		//Test value to ensure it's valid
 		try {
 			Integer intval = Integer.parseInt(val);
-			if (intval < 1 || intval > 10) {
-				throw new IllegalArgumentException("Invalid value: must be one of 1-10, A, Q, J, or K");
+			if (intval < 2 || intval > 10) {
+				throw new IllegalArgumentException("Invalid value: must be one of 2-10, A, Q, J, or K");
 			}
 		} catch (NumberFormatException e) {
 			if (!val.equalsIgnoreCase("A") 
@@ -72,12 +97,45 @@ public class Card {
 	}
 
 
-
+	/**
+	 * Get the suit of this card
+	 * @return The suit
+	 */
 	public Suit getSuit() {
 		return mySuit;
 	}
 
+	/**
+	 * Get the value of this card
+	 * @return The value
+	 */
 	public String getValue() {
 		return myValue;
 	}
+
+	@Override
+	public String toString() {
+		String representation = myValue;
+		switch(mySuit) {
+		case CLUBS:
+			representation += "♣";
+			break;
+		case DIAMONDS:
+			representation += "♦";
+			break;
+		case HEARTS:
+			representation += "♥";
+			break;
+		case SPADES:
+			representation += "♠";
+			break;
+		default:
+			break;
+		
+		}
+		
+		return representation;
+	}
+	
+	
 }
