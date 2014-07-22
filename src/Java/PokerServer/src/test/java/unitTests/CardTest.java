@@ -18,12 +18,18 @@ import pokerServer.Card.Suit;
  */
 public class CardTest {
 
+	/**
+	 * Tests that the constructor successfully constructs a valid object
+	 */
 	@Test
 	public void testConstructor() {
 		Card newCard = new Card(Suit.HEARTS, "2");
 		assertTrue(newCard instanceof Card);
 	}
 	
+	/**
+	 * Tests that the constructor assigns the suit I requested to the finished object
+	 */
 	@Test
 	public void suitIsAssignedCorrectly() {
 		Card hearts = new Card(Suit.HEARTS, "2");
@@ -37,6 +43,9 @@ public class CardTest {
 		assertEquals(clubs.getSuit(), Suit.CLUBS);
 	}
 	
+	/**
+	 * Tests that the constructor assigns the value I requested to the finished object
+	 */
 	@Test 
 	public void valueIsAssignedCorrectly() {
 		Card ace = new Card(Suit.HEARTS, "A");
@@ -68,16 +77,25 @@ public class CardTest {
 		assertEquals(king.getValue(), "K");
 	}
 	
+	/**
+	 * Tests that the constructor rejects an invalid number for a value
+	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void invalidNumericValueRejected() {
 			new Card(Suit.HEARTS, "15");
 	}
 
+	/**
+	 * Tests that the constructor rejects an invalid letter for a value
+	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void invalidFaceCardValueRejected() {
 			new Card(Suit.HEARTS, "F");
 	}
 	
+	/**
+	 * Tests that a deck generates sucessfully. Specifically, that it has 52 cards, that it has 13 of each suit, and that it has 4 of each value
+	 */
 	@Test
 	public void deckGeneratesCorrectly() {
 		ArrayList<Card> deck = Card.generateDeck();

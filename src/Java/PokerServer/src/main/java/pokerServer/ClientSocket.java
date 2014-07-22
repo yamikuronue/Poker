@@ -4,6 +4,13 @@ import pokerServer.interfaces.Client;
 import pokerServer.interfaces.Observable;
 import pokerServer.interfaces.Observer;
 
+/**
+ * Instances of the class “ClientSocket” represent external clients connected to the system via TCP sockets. 
+ * This class will send messages to the client and listen for messages from the client, 
+ * automatically rejecting anything that is not signed appropriately. 
+ * @author bgreen
+ *
+ */
 public class ClientSocket implements Client, Observable {
 
 	@Override
