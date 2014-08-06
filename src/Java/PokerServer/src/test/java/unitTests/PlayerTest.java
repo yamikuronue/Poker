@@ -1,6 +1,13 @@
 package unitTests;
 
 import static org.junit.Assert.*;
+
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
+
 import mocks.mockClient;
 
 import org.junit.Test;
@@ -61,4 +68,44 @@ public class PlayerTest {
 		
 	}
 
+	/**
+	 * Tests that a gravatar is successfully created
+	 */
+	@Test
+	public void gravatarTest() {
+		String email = "test@test.com";
+		String md5_email = "b642b4217b34b1e8d3bd915fc65c4452"; //Precomputed to avoid duplicating logic 
+		String expected = "http://www.gravatar.com/avatar/" + md5_email;
+		
+		mockClient client = new mockClient();
+		Player oot = new Player("test", email, client, 100);
+		
+		String actual = oot.getAvatarURL().toString();
+		
+		assertEquals("Avatar url not generated correctly",expected,actual);
+	}
+	
+	/**
+	 * Tests that the gravatar formula is implemented correctly to produce an image when fetched.
+	 * This test works by attempting to fetch and failing if we hit some kind of error,
+	 * such as a 400 or a 404 from the server
+	 */
+	@Test
+	public void gravatarFetchTest() {
+		String email = "test@test.com";
+		String md5_email = "b642b4217b34b1e8d3bd915fc65c4452"; //Precomputed to avoid duplicating logic 
+		String expected = "http://www.gravatar.com/avatar/" + md5_email;
+		
+		mockClient client = new mockClient();
+		Player oot = new Player("test", email, client, 100);
+		
+		URL avatarURL = oot.getAvatarURL();
+		
+		try {
+			Image avatar = ImageIO.read(avatarURL);
+		} catch (IOException e) {
+			fail("Error getting image: " + e.getLocalizedMessage());
+		}
+	}
+	
 }

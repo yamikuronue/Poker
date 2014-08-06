@@ -3,6 +3,7 @@ package pokerServer;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -57,13 +58,16 @@ public class Player implements StateObserver, ClientObserver {
 		String hashedString = ""; 
 		try {
 			md = MessageDigest.getInstance("MD5");
-			byte[] thedigest = md.digest(email.getBytes("UTF-8"));
-			hashedString = new String(thedigest);
+			byte[] thedigest = md.digest(email.getBytes(Charset.forName("UTF8")));
+			
+			//convert to hex digits
+			StringBuffer hexString = new StringBuffer();
+	        for (int i=0; i<thedigest.length; i++) {
+	            hexString.append(Integer.toHexString(0xFF & thedigest[i]));
+	        }
+	        
+			hashedString = hexString.toString();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Log this once a logger is implemented
-			e.printStackTrace();
-			hashedString = "00000000000000000000000000000000";
-		} catch (UnsupportedEncodingException e) {
 			// TODO Log this once a logger is implemented
 			e.printStackTrace();
 			hashedString = "00000000000000000000000000000000";
@@ -105,6 +109,10 @@ public class Player implements StateObserver, ClientObserver {
 	 */
 	public ArrayList<Card> getHand() {
 		return currentHand;
+	}
+	
+	public URL getAvatarURL() {
+		return avatarURL;
 	}
 	
 	@Override
