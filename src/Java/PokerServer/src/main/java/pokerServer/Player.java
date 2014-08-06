@@ -1,6 +1,5 @@
 package pokerServer;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -111,6 +110,10 @@ public class Player implements StateObserver, ClientObserver {
 		return currentHand;
 	}
 	
+	/**
+	 * Get the avatar URL for this player
+	 * @return The URL
+	 */
 	public URL getAvatarURL() {
 		return avatarURL;
 	}

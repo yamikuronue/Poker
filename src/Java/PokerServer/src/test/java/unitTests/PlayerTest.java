@@ -93,15 +93,13 @@ public class PlayerTest {
 	@Test
 	public void gravatarFetchTest() {
 		String email = "test@test.com";
-		String md5_email = "b642b4217b34b1e8d3bd915fc65c4452"; //Precomputed to avoid duplicating logic 
-		String expected = "http://www.gravatar.com/avatar/" + md5_email;
-		
 		mockClient client = new mockClient();
 		Player oot = new Player("test", email, client, 100);
 		
 		URL avatarURL = oot.getAvatarURL();
 		
 		try {
+			@SuppressWarnings("unused")
 			Image avatar = ImageIO.read(avatarURL);
 		} catch (IOException e) {
 			fail("Error getting image: " + e.getLocalizedMessage());

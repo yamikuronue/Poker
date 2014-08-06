@@ -18,6 +18,7 @@ public class StateMessage extends Message {
 	
 	/**
 	 * Constructor to create a message for a client.
+	 * @param type The type of state message to create
 	 * @param clientInvolved The client that the message is from or to.
 	 */
 	public StateMessage(StateType type, Client clientInvolved) {
@@ -150,6 +151,10 @@ public class StateMessage extends Message {
 		return false;
 	}
 	
+	/**
+	 * Valid types of states to send
+	 * @author bgreen
+	 */
 	public enum StateType {
 		/** State represents a lobby*/
 		LOBBY,
