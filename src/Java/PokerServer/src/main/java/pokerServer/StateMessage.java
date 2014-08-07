@@ -135,21 +135,63 @@ public class StateMessage extends Message {
 		return true;
 	}
 	
+	private boolean gameMessageIsValid() {
+		//Required fields
+		if (!parameters.containsKey("Pot")) return false;
+		if (!parameters.containsKey("Dealer")) return false;
+		if (!parameters.containsKey("Actor")) return false;
+		if (!parameters.containsKey("TableCards")) return false;
+		if (!parameters.containsKey("You")) return false;
+		if (!parameters.containsKey("OtherPlayers")) return false;
+		if (!parameters.containsKey("LastAction")) return false;
+		
+		//Validate table cards
+		if (!(parameters.get("TableCards") instanceof ArrayList<?>)) return false;
+		ArrayList<Card> tableCards = (ArrayList<Card>) parameters.get("TableCards");
+		int numCards = tableCards.size();
+		if (numCards != 0 && numCards != 3 && numCards != 5) return false;
+		
+		//Validate "You" object
+		if (!(parameters.get("You") instanceof HashMap<?, ?>)) return false; //Must be json object
+		HashMap<String, Object> you = (HashMap<String, Object>) parameters.get("You");
+		
+		if (!you.containsKey("Position")) return false;
+		if (!(you.get("Position") instanceof Integer)) return false;
+		
+		if (!you.containsKey("Hand")) return false;
+		if (!(you.get("Hand") instanceof ArrayList<?>)) return false;
+		ArrayList<Card> yourHand = (ArrayList<Card>) you.get("Hand");
+		numCards = tableCards.size();
+		if (numCards != 0 && numCards != 2) return false;
+		
+		if (!you.containsKey("Chips")) return false;
+		if (!(you.get("Chips") instanceof Integer)) return false;
+		
+		//Validate OtherPlayers object
+		if (!(parameters.containsKey("OtherPlayers"))) return false;
+		if (!(parameters.get("OtherPlayers") instanceof ArrayList<?>)) return false;
+		ArrayList<HashMap<String, Object>> playersList = (ArrayList<HashMap<String, Object>>) parameters.get("OtherPlayers");
+		for (HashMap<String, Object> player : playersList) {
+			if (!isValidPlayer(player, true)) return false;
+			if (!(player.containsKey("Position"))) return false;
+		}
+		
+		return true;
+	}
+	
 	private boolean isValidPlayer(HashMap<String, Object> player, boolean requireChips) {
-		if (!player.containsKey("username")) return false;
-		if (!(player.get("username") instanceof String)) return false;
-		if (!player.containsKey("avatar")) return false;
-		if (!(player.get("avatar") instanceof String)) return false;
+		if (!player.containsKey("Username")) return false;
+		if (!(player.get("Username") instanceof String)) return false;
+		if (!player.containsKey("Avatar")) return false;
+		if (!(player.get("Avatar") instanceof String)) return false;
 		if (requireChips) {
-			if (!player.containsKey("chips")) return false;
-			if (!(player.get("chips") instanceof Integer)) return false;
+			if (!player.containsKey("Chips")) return false;
+			if (!(player.get("Chips") instanceof Integer)) return false;
 		}
 		return true;
 	}
 	
-	private boolean gameMessageIsValid() {
-		return false;
-	}
+
 	
 	/**
 	 * Valid types of states to send

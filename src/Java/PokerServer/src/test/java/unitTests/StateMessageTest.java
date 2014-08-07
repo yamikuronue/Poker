@@ -453,7 +453,7 @@ public class StateMessageTest {
 		game.put("ID", "12345");
 		game.put("Open", new Boolean(true));
 		player.put("Username", "test");
-		player.put("Avatar", null);
+		player.put("Avatar", "");
 		player.put("Chips", new Integer(12));
 		game.put("Players", playersList);
 		gamesList.add(game);
@@ -461,7 +461,7 @@ public class StateMessageTest {
 		oot.addParameter("Games", gamesList);
 		oot.addParameter("LobbyOccupants", occupantList);
 		
-		assertFalse(oot.isValid());
+		assertTrue(oot.isValid());
 	}
 
 	/* Game Tests */ 
@@ -480,7 +480,7 @@ public class StateMessageTest {
 	/**
 	 * Verifies that a game state message without parameters is invalid
 	 */
-	//@Test  //This is work in progress, do not test yet. 
+	@Test  //This is work in progress, do not test yet. 
 	public void validGamePassesValidation() {
 		StateMessage oot = new StateMessage(StateType.GAME, null);
 		
@@ -492,7 +492,7 @@ public class StateMessageTest {
 		playerA.put("Chips", new Integer(10));
 		playerB.put("Chips", new Integer(20));
 		playerB.put("Username", "PlayerB");
-		playerB.put("Avatar", null);
+		playerB.put("Avatar", "");
 		playerA.put("Hand", new ArrayList<Card>());
 		ArrayList<HashMap<String, Object>> otherPlayers = new ArrayList<HashMap<String, Object>>();
 		otherPlayers.add(playerB);
