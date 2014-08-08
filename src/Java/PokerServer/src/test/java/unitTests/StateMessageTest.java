@@ -474,14 +474,102 @@ public class StateMessageTest {
 		assertFalse(oot.isValid());
 	}
 	
+
+	/** 
+	 * Verifies that a game state message without a pot is invalid
+	 *
+	 */
+	@Test
+	public void missingPotFailsValidation() {
+		StateMessage oot = createValidGameState();
+		
+		oot.removeParameter("Pot");
+		assertFalse(oot.isValid());
+	}
 	
+	/** 
+	 * Verifies that a game state message without a Dealer is invalid
+	 *
+	 */
+	@Test
+	public void missingDealerFailsValidation() {
+		StateMessage oot = createValidGameState();
+		
+		oot.removeParameter("Dealer");
+		assertFalse(oot.isValid());
+	}
 	
+	/** 
+	 * Verifies that a game state message without an Actor is invalid
+	 *
+	 */
+	@Test
+	public void missingActorFailsValidation() {
+		StateMessage oot = createValidGameState();
+		
+		oot.removeParameter("Actor");
+		assertFalse(oot.isValid());
+	}
+	
+	/** 
+	 * Verifies that a game state message without TableCards is invalid
+	 *
+	 */
+	@Test
+	public void missingTableCardsFailsValidation() {
+		StateMessage oot = createValidGameState();
+		
+		oot.removeParameter("TableCards");
+		assertFalse(oot.isValid());
+	}
+	
+	/** 
+	 * Verifies that a game state message without a You parameter is invalid
+	 *
+	 */
+	@Test
+	public void missingYouFailsValidation() {
+		StateMessage oot = createValidGameState();
+		
+		oot.removeParameter("You");
+		assertFalse(oot.isValid());
+	}
+	
+	/** 
+	 * Verifies that a game state message without an OtherPlayers parameter is invalid
+	 *
+	 */
+	@Test
+	public void missingOtherPlayersFailsValidation() {
+		StateMessage oot = createValidGameState();
+		
+		oot.removeParameter("OtherPlayers");
+		assertFalse(oot.isValid());
+	}
+	
+	/** 
+	 * Verifies that a game state message without a LastAction is invalid
+	 *
+	 */
+	@Test
+	public void missingLastActionFailsValidation() {
+		StateMessage oot = createValidGameState();
+		
+		oot.removeParameter("LastAction");
+		assertFalse(oot.isValid());
+	}
 	
 	/**
 	 * Verifies that a game state message without parameters is invalid
 	 */
-	@Test  //This is work in progress, do not test yet. 
+	@Test 
 	public void validGamePassesValidation() {
+		StateMessage oot = createValidGameState();
+		
+		assertTrue(oot.isValid());
+	}
+	
+	private StateMessage createValidGameState() {
 		StateMessage oot = new StateMessage(StateType.GAME, null);
 		
 		//Two player game. You are A.
@@ -506,6 +594,6 @@ public class StateMessageTest {
 		oot.addParameter("OtherPlayers", otherPlayers);
 		oot.addParameter("LastAction", null);
 		
-		assertTrue(oot.isValid());
+		return oot;
 	}
 }
