@@ -4,4 +4,4 @@ jdk:
 install: mvn install -DskipTests=true -f src/Java/PokerServer/pom.xml
 script: mvn test -f src/Java/PokerServer/pom.xml
 after_success:
-  - mvn clean test jacoco:report coveralls:jacoco -f src/Java/PokerServer/pom.xml
+  - mvn clean test jacoco:report org.eluder.coveralls:coveralls-maven-plugin:2.2.0:jacoco -f src/Java/PokerServer/pom.xml
