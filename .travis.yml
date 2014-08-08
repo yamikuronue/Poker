@@ -4,4 +4,4 @@ jdk:
 install: mvn install -DskipTests=true -f src/Java/PokerServer/pom.xml
 script: mvn test -f src/Java/PokerServer/pom.xml
 after_success:
-  - mvn clean test jacoco:report coveralls:jacoco
+  - mvn clean test jacoco:report coveralls:jacoco -f src/Java/PokerServer/pom.xml
