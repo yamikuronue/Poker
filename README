@@ -1,9 +1,8 @@
 Poker Portfolio Project
 =====================
-Build: <a href="https://travis-ci.org/yamikuronue/Poker.svg?branch=master"><img src="https://travis-ci.org/yamikuronue/Poker.svg?branch=master" alt='Build status'></a>
-Coverage:
 
-<a href='https://travis-ci.org/yamikuronue/Poker'><img src='https://coveralls.io/repos/yamikuronue/Poker/badge.png?branch=master' alt='Coverage Status' /></a>
+Build status: [![Build Status](https://travis-ci.org/yamikuronue/Poker.svg?branch=master)](https://travis-ci.org/yamikuronue/Poker)
+Coverage:[![Coverage Status](https://coveralls.io/repos/yamikuronue/Poker/badge.png?branch=master)](https://coveralls.io/r/yamikuronue/Poker?branch=master)
 
 
 
