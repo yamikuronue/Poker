@@ -3,3 +3,5 @@ jdk:
   - oraclejdk8
 install: mvn install -DskipTests=true -f src/Java/PokerServer/pom.xml
 script: mvn test -f src/Java/PokerServer/pom.xml
+after_success:
+  - mvn clean test jacoco:report coveralls:jacoco
