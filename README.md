@@ -1,8 +1,8 @@
 Poker Portfolio Project
 =====================
 
-Build status: [![Build Status](https://travis-ci.org/yamikuronue/Poker.svg?branch=master)](https://travis-ci.org/yamikuronue/Poker)
-Coverage:[![Coverage Status](https://coveralls.io/repos/yamikuronue/Poker/badge.png?branch=master)](https://coveralls.io/r/yamikuronue/Poker?branch=master)
+[![Build Status](https://travis-ci.org/yamikuronue/Poker.svg?branch=master)](https://travis-ci.org/yamikuronue/Poker)
+[![Coverage Status](https://coveralls.io/repos/yamikuronue/Poker/badge.png?branch=master)](https://coveralls.io/r/yamikuronue/Poker?branch=master)
 
 
 
@@ -12,5 +12,5 @@ I felt a bit bad about not putting many code samples out there on the internet, 
 
 What languages will be included?
 ------------
-Java's my favorite, so I'm starting there with a server and client pair, then I plan to put clients in other languages such as perl, python, maybe some C#.net... if I feel like it, I may add a PhP REST server implementation for shits and grins. 
+Java's my favorite, so I'm starting there with a server and client pair, then I plan to put clients in other languages such as perl, python, maybe some C#.net... if I feel like it, I may add a PHP REST server implementation for shits and grins. 
 
