@@ -6,7 +6,9 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import pokerServer.ActionMessage.Action;
 import pokerServer.interfaces.Client;
 import pokerServer.interfaces.ClientObserver;
 import pokerServer.interfaces.StateObserver;
@@ -120,16 +122,99 @@ public class Player implements StateObserver, ClientObserver {
 	
 	@Override
 	public void onMessageReceived(Message message) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Coming soon");
+		if (message instanceof ActionMessage) {
+			ActionMessage am = (ActionMessage) message;
+			
+			//Quitting
+			if (am.action == Action.QUIT ) {
+				if (currentGame != null) {
+					currentGame.removeObserver(this);
+					currentGame.removePlayer(this);
+				}
+				currentGame = null;
+			}
+			
+			//Betting
+			if (am.action == Action.BET || am.action == Action.FOLD) {
+				//Pass on the message
+				currentGame.parseMessage(am);
+			}
+			
+			//Folding
+			if (am.action == Action.FOLD) {
+				//Pass on the message
+				currentGame.parseMessage(am);
+				
+				if ( (Boolean) am.getParameter("Quit")) {
+					if (currentGame != null) {
+						currentGame.removeObserver(this);
+						currentGame.removePlayer(this);
+					}
+					currentGame = null;
+				}
+			}
+			
+			//Join a new game
+			if (am.action == Action.JOIN) {
+				Integer gameID = (Integer) am.getParameter("GameID");
+				if (PokerServer.gameIDIsValid(gameID)) {
+					joinGame(PokerServer.getGameFromID(gameID));
+				}
+			}
+			
+			//If we're not in a game or lobby, join a lobby
+			if (currentGame == null && currentLobby == null) {
+				Lobby tentativeLobby = PokerServer.getLobbyToJoin();
+				if (tentativeLobby != null) joinLobby(tentativeLobby);
+			}
+			
+		}
 	}
 
 	@Override
 	public void onStateChanged(StateMessage newState) {
-		//TODO: Add player's hand state to message
+		HashMap<String, Object> me = (HashMap<String, Object>) newState.getParameter("You");
+		
+		me.put("Hand", currentHand);
+		me.put("Chips", chipsRemaining);
+		
+		newState.setParameter("You", me);
 		
 		//Then send updated message
 		client.sendMessage(newState);
+	}
+	
+	/**
+	 * Join a Game.
+	 * @param gameToJoin the Game to join
+	 * @return True if the action succeeded, false if not. 
+	 */
+	public boolean joinGame(Game gameToJoin) {
+		if(gameToJoin.addObserver(this) && gameToJoin.addPlayer(this)) {
+			currentGame = gameToJoin;
+			if (currentLobby != null) {
+				currentLobby.removeObserver(this);
+				currentLobby = null;
+			}
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Join a Lobby.
+	 * @param lobbyToJoin the Lobby to join
+	 * @return True if the action succeeded, false if not. 
+	 */
+	public boolean joinLobby(Lobby lobbyToJoin) {
+		
+		if(lobbyToJoin.addObserver(this)) {
+			currentLobby = lobbyToJoin;
+			return true;
+		}
+		
+		return false;
 	}
 
 }
