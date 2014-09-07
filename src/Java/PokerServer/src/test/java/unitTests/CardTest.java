@@ -93,6 +93,42 @@ public class CardTest {
 			new Card(Suit.HEARTS, "F");
 	}
 	
+	/** Tests the string representations of cards **/
+	@Test
+	public void toStringGeneratesCorrectly() {
+		Card aceOfHearts = new Card(Suit.HEARTS, "A");
+		Card twoOfSpades = new Card(Suit.SPADES, "2");
+		Card threeOfDiamonds = new Card(Suit.DIAMONDS, "3");
+		Card fourOfClubs = new Card(Suit.CLUBS, "4");
+		Card fiveOfHearts = new Card(Suit.HEARTS, "5");
+		Card sixOfSpades = new Card(Suit.SPADES, "6");
+		Card sevenOfDiamonds = new Card(Suit.DIAMONDS, "7");
+		Card eightOfClubs = new Card(Suit.CLUBS, "8");
+		Card nineOfHearts = new Card(Suit.HEARTS, "9");
+		Card tenOfSpades = new Card(Suit.SPADES, "10");
+		Card jackOfDiamonds = new Card(Suit.DIAMONDS, "J");
+		Card queenOfClubs = new Card(Suit.CLUBS, "Q");
+		Card kingOfHearts = new Card(Suit.HEARTS, "K");
+		
+		assertEquals("A♥", aceOfHearts.toString());
+		assertEquals("5♥", fiveOfHearts.toString());
+		assertEquals("9♥", nineOfHearts.toString());
+		assertEquals("K♥", kingOfHearts.toString());
+		
+		assertEquals("2♠", twoOfSpades.toString());
+		assertEquals("6♠", sixOfSpades.toString());
+		assertEquals("10♠", tenOfSpades.toString());
+		
+		assertEquals("3♦", threeOfDiamonds.toString());
+		assertEquals("7♦", sevenOfDiamonds.toString());
+		assertEquals("J♦", jackOfDiamonds.toString());
+		
+		assertEquals("4♣", fourOfClubs.toString());
+		assertEquals("8♣", eightOfClubs.toString());
+		assertEquals("Q♣", queenOfClubs.toString());
+		
+	}
+	
 	/**
 	 * Tests that a deck generates sucessfully. Specifically, that it has 52 cards, that it has 13 of each suit, and that it has 4 of each value
 	 */

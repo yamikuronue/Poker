@@ -41,8 +41,30 @@ public class ActionMessageTest {
 	@Test
 	public void joinWithExtraParamsFailsValidation() {
 		ActionMessage oot = new ActionMessage(Action.JOIN, null);
-		oot.addParameter("GameID", "ABC123");
+		oot.addParameter("GameID", 12345);
 		oot.addParameter("Ooga", "Chaka");
+		assertFalse(oot.isValid());
+	}
+	
+	/**
+	 * Verifies that wrong parameters make a Join message invalid
+	 * Rule: Join message must contain only GameID
+	 */
+	@Test
+	public void joinWithWrongParamsFailsValidation() {
+		ActionMessage oot = new ActionMessage(Action.JOIN, null);
+		oot.addParameter("Ooga", "Chaka");
+		assertFalse(oot.isValid());
+	}
+	
+	/**
+	 * Verifies that an invalid GameID makes a Join message invalid
+	 * Rule: GameID must be numeric
+	 */
+	@Test
+	public void joinWithInvalidGameIDFailsValidation() {
+		ActionMessage oot = new ActionMessage(Action.JOIN, null);
+		oot.addParameter("GameID", "ABC123");
 		assertFalse(oot.isValid());
 	}
 	
@@ -80,6 +102,28 @@ public class ActionMessageTest {
 	}
 	
 	/**
+	 * Verifies that wrong parameters make a Fold message invalid
+	 * Rule: Fold message must contain only Quit
+	 */
+	@Test
+	public void foldWithWrongParamsFailsValidation() {
+		ActionMessage oot = new ActionMessage(Action.FOLD, null);
+		oot.addParameter("Ooga", "Chaka");
+		assertFalse(oot.isValid());
+	}
+	
+	/**
+	 * Verifies that an invalid Quit parameter makes a Fold message invalid
+	 * Rule: Quit parameter must be a boolean
+	 */
+	@Test
+	public void foldWithInvalidQuitFailsValidation() {
+		ActionMessage oot = new ActionMessage(Action.FOLD, null);
+		oot.addParameter("Quit", "true");
+		assertFalse(oot.isValid());
+	}
+	
+	/**
 	 * Verifies that a Quit parameter makes a Fold message valid
 	 * Rule: Fold message must contain a Quit parameter
 	 */
@@ -110,7 +154,42 @@ public class ActionMessageTest {
 		oot.addParameter("Ooga", "Chaka");
 		oot.addParameter("Hooked", "On A Feeling");
 		assertFalse(oot.isValid());
+		
+		oot = new ActionMessage(Action.BET, null);
+		oot.addParameter("Amount", 500);
+		oot.addParameter("Hooked", "On A Feeling");
+		assertFalse(oot.isValid());
+		
+		oot = new ActionMessage(Action.BET, null);
+		oot.addParameter("All-in", true);
+		oot.addParameter("Hooked", "On A Feeling");
+		assertFalse(oot.isValid());
 	}
+	
+	/**
+	 * Verifies that a Bet message with an invalid All-in parameter fails validation
+	 * Rule: All-in must be a boolean
+	 */
+	@Test
+	public void betWithInvalidAllInFailsValidation() {
+		ActionMessage oot = new ActionMessage(Action.BET, null);
+		oot.addParameter("Amount", 500);
+		oot.addParameter("All-in", "yes");
+		assertFalse(oot.isValid());
+	}
+	
+	/**
+	 * Verifies that a Bet message with an invalid Amount parameter fails validation
+	 * Rule: Amount must be numeric
+	 */
+	@Test
+	public void betWithInvalidAmountFailsValidation() {
+		ActionMessage oot = new ActionMessage(Action.BET, null);
+		oot.addParameter("Amount", "500");
+		oot.addParameter("All-in", true);
+		assertFalse(oot.isValid());
+	}
+	
 	
 	/**
 	 * Verifies that a Bet message with no All-in parameter fails validation

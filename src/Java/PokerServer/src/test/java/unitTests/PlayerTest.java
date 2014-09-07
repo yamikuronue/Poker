@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 
 import mocks.mockClient;
 import mocks.mockGame;
+import mocks.mockLobby;
 
 import org.junit.Test;
 
@@ -207,6 +208,75 @@ public class PlayerTest {
 		
 		assertTrue(game.observers.contains(oot));
 		assertTrue(game.players.contains(oot));
+	}
+	
+	/**
+	 * Verifies that a player can join a Game given a Game to join
+	 */	
+	@Test
+	public void playerCanJoinGameWhileInGame() {
+		//First, we need a client
+		mockClient client = new mockClient();
+				
+		//And a player
+		Player oot = new Player("PlayerA", "Test@test.com", client, 100);
+				
+		//Player joins game 1
+		mockGame game1 = new mockGame();
+		oot.joinGame(game1);
+		
+		//Then game 2
+		mockGame game2 = new mockGame();
+		oot.joinGame(game2);
+		
+		assertTrue(game2.observers.contains(oot));
+		assertTrue(game2.players.contains(oot));
+		assertFalse(game1.observers.contains(oot));
+		assertFalse(game1.players.contains(oot));
+	}
+	
+	/**
+	 * Verifies that a player can join a Lobby given a Lobby to join
+	 */	
+	@Test
+	public void playerCanJoinLobby() {
+		//First, we need a client
+		mockClient client = new mockClient();
+				
+		//And a player
+		Player oot = new Player("PlayerA", "Test@test.com", client, 100);
+				
+		//Player joins the lobby
+		mockLobby lobby = new mockLobby();
+		oot.joinLobby(lobby);
+		
+		assertTrue(lobby.observers.contains(oot));
+	}
+	
+	/**
+	 * Verifies that a player can join a Lobby given a Lobby to join
+	 */	
+	@Test
+	public void playerCanJoinGameAfterLobby() {
+		//First, we need a client
+		mockClient client = new mockClient();
+				
+		//And a player
+		Player oot = new Player("PlayerA", "Test@test.com", client, 100);
+				
+		//Player joins the lobby
+		mockLobby lobby = new mockLobby();
+		oot.joinLobby(lobby);
+		
+		//Then the game
+		mockGame game = new mockGame();
+		oot.joinGame(game);
+		
+		//Results
+		assertTrue(game.observers.contains(oot));
+		assertTrue(game.players.contains(oot));
+		assertFalse(lobby.observers.contains(oot));
+		
 	}
 	
 	/**

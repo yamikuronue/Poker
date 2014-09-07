@@ -190,12 +190,19 @@ public class Player implements StateObserver, ClientObserver {
 	 * @return True if the action succeeded, false if not. 
 	 */
 	public boolean joinGame(Game gameToJoin) {
+
 		if(gameToJoin.addObserver(this) && gameToJoin.addPlayer(this)) {
-			currentGame = gameToJoin;
+			if (currentGame != null){
+				currentGame.removeObserver(this);
+				currentGame.removePlayer(this);
+			}
+			
 			if (currentLobby != null) {
 				currentLobby.removeObserver(this);
 				currentLobby = null;
 			}
+			
+			currentGame = gameToJoin;
 			return true;
 		}
 		
