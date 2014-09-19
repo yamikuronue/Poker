@@ -42,8 +42,7 @@ public class Game implements Observable {
 	@Override
 	public boolean removeObserver(Observer observer) {
 		if (observer instanceof StateObserver) {
-			observers.remove((StateObserver) observer);
-			return true;
+			return observers.remove((StateObserver) observer);
 		}
 		throw new IllegalArgumentException("Not the right kind of observer");
 	}

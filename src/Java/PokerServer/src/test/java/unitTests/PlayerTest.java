@@ -204,10 +204,27 @@ public class PlayerTest {
 				
 		//Player joins the game
 		mockGame game = new mockGame();
-		oot.joinGame(game);
+		assertTrue(oot.joinGame(game));
 		
 		assertTrue(game.observers.contains(oot));
 		assertTrue(game.players.contains(oot));
+	}
+	
+	/**
+	 * Verifies that the JoinGame method returns false when the game is not joined
+	 */	
+	@Test
+	public void playerCanFailToJoinGame() {
+		//First, we need a client
+		mockClient client = new mockClient();
+				
+		//And a player
+		Player oot = new Player("PlayerA", "Test@test.com", client, 100);
+				
+		//Player joins the game
+		mockGame game = new mockGame();
+		game.actionReturnValue = false;
+		assertFalse(oot.joinGame(game));
 	}
 	
 	/**
@@ -248,9 +265,26 @@ public class PlayerTest {
 				
 		//Player joins the lobby
 		mockLobby lobby = new mockLobby();
-		oot.joinLobby(lobby);
+		assertTrue(oot.joinLobby(lobby));
 		
 		assertTrue(lobby.observers.contains(oot));
+	}
+	
+	/**
+	 * Verifies that a player returns false when a lobby is not joined
+	 */	
+	@Test
+	public void playerCanFailToJoinLobby() {
+		//First, we need a client
+		mockClient client = new mockClient();
+				
+		//And a player
+		Player oot = new Player("PlayerA", "Test@test.com", client, 100);
+				
+		//Player joins the lobby
+		mockLobby lobby = new mockLobby();
+		lobby.actionReturnValue = false;
+		assertFalse(oot.joinLobby(lobby));
 	}
 	
 	/**

@@ -12,7 +12,7 @@ import java.util.HashMap;
  *
  */
 public class PokerServer {
-	public static final int MAX_PLAYERS_PER_GAME = 6;
+	public static int MAX_PLAYERS_PER_GAME = 6;
 	public static final int MIN_PLAYERS_PER_GAME = 3;
 	private static Integer nextGameID = 1;
 	private static HashMap<Integer, Game> activeGames = new HashMap<Integer, Game>();

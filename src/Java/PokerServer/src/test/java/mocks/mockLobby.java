@@ -10,7 +10,8 @@ import pokerServer.interfaces.StateObserver;
 
 public class mockLobby extends Lobby {
 	public ArrayList<StateObserver> observers;
-
+	public boolean actionReturnValue = true; 
+	
 	public mockLobby() {
 		super();
 		observers = new ArrayList<StateObserver>();
@@ -20,7 +21,7 @@ public class mockLobby extends Lobby {
 	public boolean addObserver(Observer observer) {
 		if (observer instanceof StateObserver) {
 			observers.add((StateObserver) observer);
-			return true;
+			return actionReturnValue;
 		}
 		throw new IllegalArgumentException("Not the right kind of observer");
 	}
@@ -29,7 +30,7 @@ public class mockLobby extends Lobby {
 	public boolean removeObserver(Observer observer) {
 		if (observer instanceof StateObserver) {
 			observers.remove((StateObserver) observer);
-			return true;
+			return actionReturnValue;
 		}
 		throw new IllegalArgumentException("Not the right kind of observer");
 	}

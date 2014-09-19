@@ -12,6 +12,7 @@ public class mockGame extends Game {
 	public ArrayList<Player> players;
 	public ActionMessage lastActionMessage;
 	public Integer gameID;
+	public boolean actionReturnValue = true;
 
 	public mockGame() {
 		super();
@@ -24,7 +25,7 @@ public class mockGame extends Game {
 	public boolean addObserver(Observer observer) {
 		if (observer instanceof StateObserver) {
 			observers.add((StateObserver) observer);
-			return true;
+			return actionReturnValue;
 		}
 		throw new IllegalArgumentException("Not the right kind of observer");
 	}
@@ -33,23 +34,23 @@ public class mockGame extends Game {
 	public boolean removeObserver(Observer observer) {
 		if (observer instanceof StateObserver) {
 			observers.remove((StateObserver) observer);
-			return true;
+			return actionReturnValue;
 		}
 		throw new IllegalArgumentException("Not the right kind of observer");
 	}
 	
 	public boolean addPlayer(Player player) {
 		players.add(player);
-		return true;
+		return actionReturnValue;
 	}
 	
 	public boolean removePlayer(Player player) {
 		players.remove(player);
-		return true;
+		return actionReturnValue;
 	}
 	
 	public boolean parseMessage(ActionMessage message) {
 		this.lastActionMessage = message;
-		return true;
+		return actionReturnValue;
 	}
 }

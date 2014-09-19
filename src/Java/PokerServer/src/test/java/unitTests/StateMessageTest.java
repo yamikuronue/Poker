@@ -314,9 +314,9 @@ public class StateMessageTest {
 		game.put("ID", "12345");
 		game.put("Open", new Boolean(true));
 		player.put("InvalidKey", null);
+		playersList.add(player);
 		game.put("Players", playersList);
 		gamesList.add(game);
-		occupantList.add(player);
 		oot.addParameter("Games", gamesList);
 		oot.addParameter("LobbyOccupants", occupantList);
 		
@@ -462,6 +462,96 @@ public class StateMessageTest {
 		oot.addParameter("LobbyOccupants", occupantList);
 		
 		assertTrue(oot.isValid());
+	}
+	
+	/**
+	 * Verifies that the optional list of watchers in the game in the lobby passes validation
+	 */
+	@Test
+	public void validWatchersPassesValidation() {
+		StateMessage oot = new StateMessage(StateType.LOBBY, null);
+
+		ArrayList<HashMap<String, Object>> gamesList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> game = new HashMap<String, Object>();
+		ArrayList<HashMap<String, Object>> playersList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> player = new HashMap<String, Object>();
+		ArrayList<HashMap<String, Object>> occupantList = new ArrayList<HashMap<String, Object>>();
+		ArrayList<HashMap<String, Object>> watcherList = new ArrayList<HashMap<String, Object>>();
+
+		
+		game.put("ID", "12345");
+		game.put("Open", new Boolean(true));
+		player.put("Username", "test");
+		player.put("Avatar", "");
+		player.put("Chips", new Integer(12));
+		game.put("Players", playersList);
+		watcherList.add(player);
+		game.put("Watchers", watcherList);
+		gamesList.add(game);
+
+		oot.addParameter("Games", gamesList);
+		oot.addParameter("LobbyOccupants", occupantList);
+		
+		assertTrue(oot.isValid());
+	}
+	
+	/**
+	 * Verifies that the optional list of watchers in the game in the lobby fails validation when it is invalid
+	 */
+	@Test
+	public void invalidWatchersFailsValidation() {
+		StateMessage oot = new StateMessage(StateType.LOBBY, null);
+
+		ArrayList<HashMap<String, Object>> gamesList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> game = new HashMap<String, Object>();
+		ArrayList<HashMap<String, Object>> playersList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> player = new HashMap<String, Object>();
+		ArrayList<HashMap<String, Object>> occupantList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> watcherList = new HashMap<String, Object>();
+
+		
+		game.put("ID", "12345");
+		game.put("Open", new Boolean(true));
+		player.put("Username", "test");
+		player.put("Avatar", "");
+		player.put("Chips", new Integer(12));
+		game.put("Players", playersList);
+		watcherList.put("invalidKey", "invalidValue");
+		game.put("Watchers", watcherList);
+		gamesList.add(game);
+
+		oot.addParameter("Games", gamesList);
+		oot.addParameter("LobbyOccupants", occupantList);
+		
+		assertFalse(oot.isValid());
+	}
+	
+	/**
+	 * Verifies that invalid players in a lobby state message make the message invalid.
+	 * Rule: Players must contain a username, an avatar, and a number of chips
+	 */
+	@Test
+	public void invalidPlayerinWatchlistinGameInLobbyFailsValidation() {
+		StateMessage oot = new StateMessage(StateType.LOBBY, null);
+
+		ArrayList<HashMap<String, Object>> gamesList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> game = new HashMap<String, Object>();
+		ArrayList<HashMap<String, Object>> playersList = new ArrayList<HashMap<String, Object>>();
+		ArrayList<HashMap<String, Object>> watchersList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> player = new HashMap<String, Object>();
+		ArrayList<HashMap<String, Object>> occupantList = new ArrayList<HashMap<String, Object>>();
+
+		
+		game.put("ID", "12345");
+		game.put("Open", new Boolean(true));
+		player.put("InvalidKey", null);
+		watchersList.add(player);
+		game.put("Watchers", watchersList);
+		gamesList.add(game);
+		oot.addParameter("Games", gamesList);
+		oot.addParameter("LobbyOccupants", occupantList);
+		
+		assertFalse(oot.isValid());
 	}
 
 	/* Game Tests */ 
