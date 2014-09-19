@@ -64,7 +64,11 @@ public class Player implements StateObserver, ClientObserver {
 			//convert to hex digits
 			StringBuffer hexString = new StringBuffer();
 	        for (int i=0; i<thedigest.length; i++) {
-	            hexString.append(Integer.toHexString(0xFF & thedigest[i]));
+	        	String hextemp = Integer.toHexString(0xFF & thedigest[i]);
+	        	if (hextemp.length() < 2) {
+	        		hextemp = "0" + hextemp;
+	        	}
+	            hexString.append(hextemp);
 	        }
 	        
 			hashedString = hexString.toString();
