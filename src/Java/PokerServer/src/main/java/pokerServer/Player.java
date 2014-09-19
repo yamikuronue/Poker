@@ -5,7 +5,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -64,9 +63,8 @@ public class Player implements StateObserver, ClientObserver {
 			
 			//convert to hex digits
 			StringBuffer hexString = new StringBuffer();
-			DecimalFormat ensureTwoDigits = new DecimalFormat("##");
 	        for (int i=0; i<thedigest.length; i++) {
-	            hexString.append(ensureTwoDigits.format(Integer.toHexString(0xFF & thedigest[i])));
+	            hexString.append(Integer.toHexString(0xFF & thedigest[i]));
 	        }
 	        
 			hashedString = hexString.toString();
