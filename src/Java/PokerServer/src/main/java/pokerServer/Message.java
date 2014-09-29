@@ -12,6 +12,10 @@ public abstract class Message {
 	Client clientInvolved;
 	HashMap<String, Object> parameters;
 
+	/**
+	 * Basic constructor
+	 * @param clientInvolved The client sending or receiving the message.
+	 */
 	public Message(Client clientInvolved) {
 		this.clientInvolved = clientInvolved;
 		this.parameters = new HashMap<String, Object>();
@@ -66,7 +70,5 @@ public abstract class Message {
 	 * Computes if the parameters given to the message are complete and valid according to the spec
 	 * @return True if so, false if it is not valid. 
 	 */
-	public boolean isValid() {
-		return true;
-	}
+	public abstract boolean isValid();
 }

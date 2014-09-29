@@ -68,7 +68,7 @@ public class MessageTest {
 		oot.removeParameter("Test");
 		oot.getParameter("Test");
 	}
-	
+
 	/**
 	 * Exists solely so we can instantiate a Message aside from implementation
 	 * @author bgreen
@@ -76,6 +76,11 @@ public class MessageTest {
 	private class testMessage extends Message {
 		public testMessage(Client clientInvolved) {
 			super(clientInvolved);
+		}
+
+		@Override
+		public boolean isValid() {
+			return true;
 		}
 	}
 }

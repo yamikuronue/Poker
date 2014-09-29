@@ -31,6 +31,16 @@ import pokerServer.StateMessage.StateType;
  */
 public class PlayerTest {
 
+	/**
+	 * Tests that the username assigned can be retrieved
+	 */
+	@Test
+	public void usernameIsSavedTest() {
+		mockClient client = new mockClient(); 
+		Player player = new Player("user", "user@example.com", client, 100);
+		
+		assertEquals("user", player.getUsername());
+	}
 
 	/**
 	 * Tests that cards added to the hand are retained and regurgitated on command

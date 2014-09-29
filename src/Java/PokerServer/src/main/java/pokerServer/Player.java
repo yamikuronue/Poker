@@ -46,6 +46,14 @@ public class Player implements StateObserver, ClientObserver {
 		this.currentHand = new ArrayList<Card>();
 	}
 
+	/**
+	 * Get the username for the player, usually to display it.
+	 * @return the player's chosen username, as a string.
+	 */
+	public String getUsername() {
+		return username;
+	}
+
 	private URL makeGravatarURL(String email) {
 		//Docs from https://en.gravatar.com/site/implement/hash/
 		//1. Trim leading and trailing whitespace from an email address
@@ -175,6 +183,7 @@ public class Player implements StateObserver, ClientObserver {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onStateChanged(StateMessage newState) {
 		HashMap<String, Object> me = (HashMap<String, Object>) newState.getParameter("You");

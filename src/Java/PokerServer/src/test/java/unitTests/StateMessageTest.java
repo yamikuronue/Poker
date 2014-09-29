@@ -536,7 +536,6 @@ public class StateMessageTest {
 
 		ArrayList<HashMap<String, Object>> gamesList = new ArrayList<HashMap<String, Object>>();
 		HashMap<String, Object> game = new HashMap<String, Object>();
-		ArrayList<HashMap<String, Object>> playersList = new ArrayList<HashMap<String, Object>>();
 		ArrayList<HashMap<String, Object>> watchersList = new ArrayList<HashMap<String, Object>>();
 		HashMap<String, Object> player = new HashMap<String, Object>();
 		ArrayList<HashMap<String, Object>> occupantList = new ArrayList<HashMap<String, Object>>();

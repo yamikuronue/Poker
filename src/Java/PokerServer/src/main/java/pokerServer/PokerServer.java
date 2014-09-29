@@ -12,7 +12,9 @@ import java.util.HashMap;
  *
  */
 public class PokerServer {
+	/** The maximum players allowed in a game. **/
 	public static int MAX_PLAYERS_PER_GAME = 6;
+	/**The minimum players needed to run a game **/
 	public static final int MIN_PLAYERS_PER_GAME = 3;
 	private static Integer nextGameID = 1;
 	private static HashMap<Integer, Game> activeGames = new HashMap<Integer, Game>();
@@ -20,7 +22,11 @@ public class PokerServer {
 	private static ArrayList<Player> allPlayers = new ArrayList<Player>();
 	
 	
-	 public static void main(String args[]) {
+	 /**
+	  * The main method. Starts the server
+	 * @param args Command-line arguments
+	 */
+	public static void main(String args[]) {
 		 //Create a lobby and a game. They will add themselves to the lists.
 		 new Lobby();
 		 new Game();		
@@ -57,6 +63,10 @@ public class PokerServer {
 	}
 
 
+	/**
+	 * Get the lobby that the player should be assigned to.
+	 * @return A Lobby that can accept a new player.
+	 */
 	public static Lobby getLobbyToJoin() {
 		return activeLobbies.get(0);
 	}

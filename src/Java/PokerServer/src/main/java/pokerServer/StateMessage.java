@@ -97,6 +97,7 @@ public class StateMessage extends Message {
 		return true;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private boolean gameMessageIsValid() {
 		//Required fields
 		if (!parameters.containsKey("Pot")) return false;
@@ -123,7 +124,7 @@ public class StateMessage extends Message {
 		if (!you.containsKey("Hand")) return false;
 		if (!(you.get("Hand") instanceof ArrayList<?>)) return false;
 		ArrayList<Card> yourHand = (ArrayList<Card>) you.get("Hand");
-		numCards = tableCards.size();
+		numCards = yourHand.size();
 		if (numCards != 0 && numCards != 2) return false;
 		
 		if (!you.containsKey("Chips")) return false;

@@ -91,15 +91,29 @@ public class Game implements Observable {
 		return false;
 	}
 
+	/**
+	 * Parse a message representing an action to be taken
+	 * @param am The message
+	 * @return True if the action was taken, false if not. 
+	 */
 	public boolean parseMessage(ActionMessage am) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Coming soon");
 	}
 	
+	/**
+	 * The potential states a game can be in
+	 * @author bgreen
+	 *
+	 */
 	public enum GameState {
+		/**Waiting for more players to join before starting **/
 		WAITING_FOR_PLAYERS,
+		/**Dealing out hands **/
 		DEALING,
+		/**Waiting for bets to be placed **/
 		BETTING,
+		/**Calculating the winner **/
 		END_GAME
 	}
 
