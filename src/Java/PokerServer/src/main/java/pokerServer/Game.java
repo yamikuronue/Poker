@@ -73,13 +73,14 @@ public class Game implements Observable {
 		for (int i = 0; i < PokerServer.MAX_PLAYERS_PER_GAME; i++) {
 			if (!players.containsKey(i)) {
 				players.put(i, player);
+				if (state == GameState.WAITING_FOR_PLAYERS && players.size() >= PokerServer.MIN_PLAYERS_PER_GAME) {
+					dealHands();
+				}
 				return true;
 			};
 		}
 		
-		if (state == GameState.WAITING_FOR_PLAYERS && players.size() >= PokerServer.MIN_PLAYERS_PER_GAME) {
-			dealHands();
-		}
+		
 		
 		return false;
 	}

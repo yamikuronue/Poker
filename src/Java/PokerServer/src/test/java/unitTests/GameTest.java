@@ -119,6 +119,7 @@ public class GameTest {
 	/**
 	 * When enough players have joined, they are each dealt two cards.
 	 */
+	@Test
 	public void gameCanBegin() {
 		mockPlayer p1 = new mockPlayer();
 		mockPlayer p2 = new mockPlayer();
@@ -126,6 +127,8 @@ public class GameTest {
 		
 		PokerServer.MIN_PLAYERS_PER_GAME = 2;
 		
+		oot.addObserver(p1);
+		oot.addObserver(p2);
 		oot.addPlayer(p1);
 		oot.addPlayer(p2);
 		
