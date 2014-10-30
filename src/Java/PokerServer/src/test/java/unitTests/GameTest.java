@@ -117,6 +117,28 @@ public class GameTest {
 	}
 	
 	/**
+	 * When enough players have joined, they are each dealt two cards.
+	 */
+	public void gameCanBegin() {
+		mockPlayer p1 = new mockPlayer();
+		mockPlayer p2 = new mockPlayer();
+		Game oot = new Game();
+		
+		PokerServer.MIN_PLAYERS_PER_GAME = 2;
+		
+		oot.addPlayer(p1);
+		oot.addPlayer(p2);
+		
+		//They should be given cards
+		assertEquals(2, p1.numCardsDealt);
+		assertEquals(2, p2.numCardsDealt);
+		
+		//And told about it
+		assertTrue(p1.lastStateMessage != null);
+		assertTrue(p2.lastStateMessage != null);
+	}
+	
+	/**
 	 * Player cannot be removed from a game if it was not observing
 	 */
 	@Test

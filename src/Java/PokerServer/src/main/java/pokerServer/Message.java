@@ -8,7 +8,7 @@ import pokerServer.interfaces.Client;
  * Instances of the class “Message” represent a message coming from or going to a client. 
  * @author bgreen
  */
-public abstract class Message {
+public abstract class Message implements Cloneable {
 	Client clientInvolved;
 	HashMap<String, Object> parameters;
 
@@ -20,8 +20,8 @@ public abstract class Message {
 		this.clientInvolved = clientInvolved;
 		this.parameters = new HashMap<String, Object>();
 	}
-	
-	
+
+
 	/**
 	 * Add a parameter to the message state. This is safe and will not overwrite existing parameters
 	 * @param name The name of the parameter to add

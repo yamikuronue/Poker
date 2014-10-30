@@ -125,15 +125,54 @@ public class PlayerTest {
 	}
 	
 	/**
-	 * Tests that the Player puts the right information in the "You" column
+	 * Tests that the Player does not alter the StateMessage if there is no Game
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
-	public void playerAddsCorrectHandAndChipsToStateMessage() {
+	public void playerdoesNotChangeStateMessage() {
 		//First we need a player
 		String email = "test@test.com";
 		mockClient client = new mockClient();
 		Player oot = new Player("PlayerA", email, client, 100);
+		
+		//Now configure the hand
+		Card card1 = new Card(Suit.DIAMONDS, "Q");
+		oot.addCardToHand(card1);
+		
+		Card card2 = new Card(Suit.CLUBS, "Q");
+		oot.addCardToHand(card2);
+		
+		
+		//Now make a GameState message
+		StateMessage messageBefore = createTwoPlayerGameState();
+		
+		//Pass it to the Player
+		oot.onStateChanged(messageBefore);
+		
+		//First ensure the Player passed it on
+		assertTrue(client.sendMessageInvoked);
+		
+		StateMessage messageAfter = (StateMessage) client.lastMessageSent;
+	
+		//Now check correctness
+		assertEquals(messageAfter, messageBefore);
+		
+	}
+	
+	/**
+	 * Tests that the Player puts the right information in the "You" column
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void playerAddsCorrectHandAndChipsToGameStateMessage() {
+		//First we need a player
+		String email = "test@test.com";
+		mockClient client = new mockClient();
+		Player oot = new Player("PlayerA", email, client, 100);
+		
+		mockGame game = new mockGame();
+		oot.joinGame(game);
+		game.positionToReturn = 1;
 		
 		//Now configure the hand
 		Card card1 = new Card(Suit.DIAMONDS, "Q");
@@ -172,6 +211,11 @@ public class PlayerTest {
 		assertTrue(hand.contains(card1));
 		assertTrue(hand.contains(card2));
 		
+		ArrayList<HashMap<String, Object>> otherPlayersBefore = (ArrayList<HashMap<String, Object>>) messageBefore.getParameter("OtherPlayers");
+		ArrayList<HashMap<String, Object>> otherPlayersAfter = (ArrayList<HashMap<String, Object>>) messageAfter.getParameter("OtherPlayers");
+
+		assertEquals(1, otherPlayersAfter.size());
+		
 	}
 	
 	private StateMessage createTwoPlayerGameState() {
@@ -181,18 +225,20 @@ public class PlayerTest {
 		HashMap<String, Object> playerA = new HashMap<String, Object>();
 		HashMap<String, Object> playerB = new HashMap<String, Object>();
 		playerA.put("Position", new Integer(1));
+		playerA.put("Username", "PlayerA");
+		playerA.put("Avatar", "");
 		playerB.put("Position", new Integer(2));
 		playerB.put("Chips", new Integer(20));
 		playerB.put("Username", "PlayerB");
 		playerB.put("Avatar", "");
 		ArrayList<HashMap<String, Object>> otherPlayers = new ArrayList<HashMap<String, Object>>();
 		otherPlayers.add(playerB);
+		otherPlayers.add(playerA);
 		
 		//State is beginning of game, pre-deal.
 		message.addParameter("Pot", new Integer(0));
 		message.addParameter("Dealer", "playerA");
 		message.addParameter("Actor", "playerA");
-		message.addParameter("You", playerA);
 		message.addParameter("TableCards", new ArrayList<Card>());
 		message.addParameter("OtherPlayers", otherPlayers);
 		message.addParameter("LastAction", null);
@@ -444,15 +490,18 @@ public class PlayerTest {
 	public void playerCanBet() {
 		//First, we need a client
 		mockClient client = new mockClient();
+		Integer chipsToBet = 50;
+		Integer numChips = 100;
+		Integer chipsLeft = numChips - chipsToBet;
 		
 		//To bet, we need a message saying to do so
 		ActionMessage betMessage = new ActionMessage(Action.BET, client);
-		betMessage.addParameter("Amount", 100);
+		betMessage.addParameter("Amount", chipsToBet);
 		betMessage.addParameter("All-in", false);
 		
 				
 		//And a player
-		Player oot = new Player("PlayerA", "Test@test.com", client, 100);
+		Player oot = new Player("PlayerA", "Test@test.com", client, numChips);
 		
 		//Player needs to be in the game
 		mockGame game = new mockGame();
@@ -467,5 +516,38 @@ public class PlayerTest {
 		
 		//Player should send on the "bet" command.
 		assertEquals(betMessage, game.lastActionMessage);
+		assertEquals(chipsLeft, oot.getChips());
+	}
+	
+	/**
+	 * Verifies that a player will not attempt to bet too many chips
+	 */
+	@Test
+	public void playerCannotBetMoreThanExists() {
+		//First, we need a client
+		mockClient client = new mockClient();
+		Integer chipsToBet = 100;
+		Integer numChips = 50;
+		Integer chipsLeft = numChips;
+		
+		//To bet, we need a message saying to do so
+		ActionMessage betMessage = new ActionMessage(Action.BET, client);
+		betMessage.addParameter("Amount", chipsToBet);
+		betMessage.addParameter("All-in", false);
+		
+				
+		//And a player
+		Player oot = new Player("PlayerA", "Test@test.com", client, numChips);
+		
+		//Player needs to be in the game
+		mockGame game = new mockGame();
+		oot.joinGame(game);
+		
+		//We pass in the message as though we were the client
+		oot.onMessageReceived(betMessage);
+		
+		//Player should not send on the "bet" command.
+		assertEquals(null, game.lastActionMessage);
+		assertEquals(chipsLeft, oot.getChips());
 	}
 }

@@ -25,7 +25,6 @@ public class StateMessage extends Message {
 		this.type = type;
 	}
 
-	
 	@Override
 	public boolean isValid() {
 		//Must have type

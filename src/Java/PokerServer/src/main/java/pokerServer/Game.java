@@ -2,7 +2,9 @@ package pokerServer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
+import pokerServer.StateMessage.StateType;
 import pokerServer.interfaces.Observable;
 import pokerServer.interfaces.Observer;
 import pokerServer.interfaces.StateObserver;
@@ -20,6 +22,14 @@ public class Game implements Observable {
 	private ArrayList<StateObserver> observers;
 	private HashMap<Integer, Player> players;
 	private GameState state;
+	private ArrayList<Card> deck;
+	private Random rand;
+	private Integer pot;
+	private Player dealer;
+	private Player currentActor;
+	private ArrayList<Card> tableCards;
+	private ActionMessage lastAction;
+	
 	/**
 	 * Create a new game and add it to the list
 	 */
@@ -28,6 +38,9 @@ public class Game implements Observable {
 		observers = new ArrayList<StateObserver>();
 		players = new HashMap<Integer, Player>();
 		this.state = GameState.WAITING_FOR_PLAYERS;
+		this.rand = new Random();
+		this.pot = 0;
+		this.tableCards = new ArrayList<Card>();
 	}
 	
 	@Override
@@ -72,8 +85,68 @@ public class Game implements Observable {
 	}
 
 	private void dealHands() {
-		// TODO Auto-generated method stub
+		// Shuffle deck
+		deck = Card.generateDeck();
 		
+		//Deal each player two cards
+		for (int i = 0; i < players.size(); i++) {
+			Card card = deck.remove(rand.nextInt(deck.size()));
+			players.get(i).addCardToHand(card);
+			
+			card = deck.remove(rand.nextInt(deck.size()));
+			players.get(i).addCardToHand(card);
+		}
+		
+		//and tell them all they can bet
+		state = GameState.BETTING;
+		messageStateChanged();
+		
+	}
+	
+	private void messageStateChanged() {		
+		StateMessage message = new StateMessage(StateType.GAME, null);
+		ArrayList<HashMap<String, Object>> playersEncoded = new ArrayList<HashMap<String, Object>>();
+		
+		//Static elements
+		message.addParameter("Pot", pot);
+		message.addParameter("Dealer", dealer);
+		message.addParameter("Actor", currentActor);
+		message.addParameter("TableCards", tableCards);
+		message.addParameter("LastAction", lastAction);
+		
+		//Encode each player
+		for (int i = 0; i < players.size(); i++) {
+			Player player = players.get(i);
+			HashMap<String,Object> playerHash = new HashMap<String, Object>();
+			playerHash.put("Position", i);
+			playerHash.put("Username", player.getUsername());
+			playerHash.put("Avatar", player.getAvatarURL());
+			playerHash.put("Chips", player.getChips());
+			
+			playersEncoded.add(playerHash);
+		}
+		
+		message.addParameter("OtherPlayers", playersEncoded);
+		
+		//send 
+		for (StateObserver observer : observers) {
+			//TODO: thread
+			observer.onStateChanged(message);
+		}
+	}
+	
+	/**
+	 * Get the position for a given player
+	 * @param p The player
+	 * @return The position, or null if they are not in the game
+	 */
+	public Integer getPositionFor(Player p) {
+		for (Integer position : players.keySet()) {
+			if (players.get(position) == p) {
+				return position;
+			}
+		}
+		return null;
 	}
 
 	/**

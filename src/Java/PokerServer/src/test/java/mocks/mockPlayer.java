@@ -9,13 +9,16 @@ import pokerServer.StateMessage;
 
 public class mockPlayer extends Player {
 
+	public int numCardsDealt = 0;
+	public Message lastStateMessage = null;
+	
 	public mockPlayer() {
 		super("user", "user@example.com", new mockClient(), 100);
 	}
 
 	@Override
 	public void addCardToHand(Card card) {
-		//do nothing
+		numCardsDealt++;
 	}
 
 	@Override
@@ -31,7 +34,7 @@ public class mockPlayer extends Player {
 
 	@Override
 	public void onStateChanged(StateMessage newState) {
-		//do nothing
+		lastStateMessage = newState;
 	}
 
 	@Override

@@ -147,9 +147,17 @@ public class Player implements StateObserver, ClientObserver {
 			}
 			
 			//Betting
-			if (am.action == Action.BET || am.action == Action.FOLD) {
-				//Pass on the message
-				currentGame.parseMessage(am);
+			if (am.action == Action.BET) {
+				//Basic validation
+				Integer amount = (Integer) am.getParameter("Amount");
+				
+				if (amount < chipsRemaining) {
+					//Pass on the message
+					if (currentGame.parseMessage(am)) {
+						//deduct chips for bet
+						chipsRemaining -= amount;
+					}
+				}	
 			}
 			
 			//Folding
@@ -186,13 +194,29 @@ public class Player implements StateObserver, ClientObserver {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onStateChanged(StateMessage newState) {
-		HashMap<String, Object> me = (HashMap<String, Object>) newState.getParameter("You");
 		
-		me.put("Hand", currentHand);
-		me.put("Chips", chipsRemaining);
-		
-		newState.setParameter("You", me);
-		
+		if (currentGame != null) {
+			Integer mySeat = currentGame.getPositionFor(this);
+			
+			//Remove self from otherPlayers hash
+			ArrayList<HashMap<String, Object>> players = (ArrayList<HashMap<String, Object>>) newState.getParameter("OtherPlayers");
+			for (int i = 0; i < players.size(); i++) {
+				HashMap<String,Object> playerEncoded = players.get(i);
+				if (((Integer) playerEncoded.get("Position")).intValue() == mySeat.intValue()) {
+					players.remove(i);
+				}
+			}
+			
+			newState.setParameter("OtherPlayers", players);
+			
+			HashMap<String, Object> me = new HashMap<String, Object>();
+			me.put("Hand", currentHand);
+			me.put("Chips", chipsRemaining);
+			me.put("Position", mySeat);
+			
+			newState.setParameter("You", me);
+		}
+
 		//Then send updated message
 		client.sendMessage(newState);
 	}
@@ -235,6 +259,10 @@ public class Player implements StateObserver, ClientObserver {
 		}
 		
 		return false;
+	}
+
+	public Integer getChips() {
+		return chipsRemaining;
 	}
 
 }

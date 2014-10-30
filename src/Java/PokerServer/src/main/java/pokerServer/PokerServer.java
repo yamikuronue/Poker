@@ -15,7 +15,7 @@ public class PokerServer {
 	/** The maximum players allowed in a game. **/
 	public static int MAX_PLAYERS_PER_GAME = 6;
 	/**The minimum players needed to run a game **/
-	public static final int MIN_PLAYERS_PER_GAME = 3;
+	public static int MIN_PLAYERS_PER_GAME = 3;
 	private static Integer nextGameID = 1;
 	private static HashMap<Integer, Game> activeGames = new HashMap<Integer, Game>();
 	private static HashMap<Integer, Lobby> activeLobbies = new HashMap<Integer, Lobby>();

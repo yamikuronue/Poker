@@ -13,6 +13,7 @@ public class mockGame extends Game {
 	public ActionMessage lastActionMessage;
 	public Integer gameID;
 	public boolean actionReturnValue = true;
+	public int positionToReturn = 0;
 
 	public mockGame() {
 		super();
@@ -39,6 +40,11 @@ public class mockGame extends Game {
 		throw new IllegalArgumentException("Not the right kind of observer");
 	}
 	
+	@Override
+	public Integer getPositionFor(Player p) {
+		return positionToReturn;
+	}
+
 	public boolean addPlayer(Player player) {
 		players.add(player);
 		return actionReturnValue;
