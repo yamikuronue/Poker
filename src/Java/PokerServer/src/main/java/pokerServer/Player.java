@@ -153,7 +153,7 @@ public class Player implements StateObserver, ClientObserver {
 				
 				if (amount < chipsRemaining) {
 					//Pass on the message
-					if (currentGame.parseMessage(am)) {
+					if (currentGame.parseMessage(am, this)) {
 						//deduct chips for bet
 						chipsRemaining -= amount;
 					}
@@ -163,7 +163,7 @@ public class Player implements StateObserver, ClientObserver {
 			//Folding
 			if (am.action == Action.FOLD) {
 				//Pass on the message
-				currentGame.parseMessage(am);
+				currentGame.parseMessage(am, this);
 				
 				if ( (Boolean) am.getParameter("Quit")) {
 					if (currentGame != null) {

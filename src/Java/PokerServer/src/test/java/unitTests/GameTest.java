@@ -8,10 +8,12 @@ import mocks.mockPlayer;
 
 import org.junit.Test;
 
+import pokerServer.ActionMessage;
 import pokerServer.Game;
 import pokerServer.Player;
 import pokerServer.PokerServer;
 import pokerServer.StateMessage;
+import pokerServer.ActionMessage.Action;
 import pokerServer.interfaces.Observer;
 import pokerServer.interfaces.StateObserver;
 
@@ -117,6 +119,17 @@ public class GameTest {
 	}
 	
 	/**
+	 * Player cannot be removed from a game if it was not observing
+	 */
+	@Test
+	public void nonExistingPlayerCannotBeRemoved() {
+		Player p = new mockPlayer();
+		Game oot = new Game();
+		
+		assertFalse(oot.removePlayer(p));
+	}
+	
+	/**
 	 * When enough players have joined, they are each dealt two cards.
 	 */
 	@Test
@@ -132,24 +145,45 @@ public class GameTest {
 		oot.addPlayer(p1);
 		oot.addPlayer(p2);
 		
-		//They should be given cards
-		assertEquals(2, p1.numCardsDealt);
-		assertEquals(2, p2.numCardsDealt);
+		//They should not be given cards
+		assertEquals(0, p1.numCardsDealt);
+		assertEquals(0, p2.numCardsDealt);
 		
-		//And told about it
+		//They should be told to bet
 		assertTrue(p1.lastStateMessage != null);
 		assertTrue(p2.lastStateMessage != null);
 	}
 	
 	/**
-	 * Player cannot be removed from a game if it was not observing
+	 * Test that the player whose turn it isn't can't go
 	 */
 	@Test
-	public void nonExistingPlayerCannotBeRemoved() {
-		Player p = new mockPlayer();
+	public void wrongPlayerCannotAct() {
+		mockPlayer p1 = new mockPlayer("Player1");
+		mockPlayer p2 = new mockPlayer("Player2");
 		Game oot = new Game();
 		
-		assertFalse(oot.removePlayer(p));
+		PokerServer.MIN_PLAYERS_PER_GAME = 2;
+		
+		oot.addObserver(p1);
+		oot.addObserver(p2);
+		oot.addPlayer(p1);
+		oot.addPlayer(p2);
+		
+		ActionMessage betMessage = new ActionMessage(Action.BET, null);
+		betMessage.addParameter("Amount", 100);
+		betMessage.addParameter("All-in", false);
+		
+		//GRab the message
+		StateMessage gameStartMessage = (StateMessage) p1.lastStateMessage;
+		String actor = (String) gameStartMessage.getParameter("Actor");
+		boolean allowed;
+		if (actor.equalsIgnoreCase("Player1")) {
+			allowed = oot.parseMessage(betMessage, p2);
+		} else {
+			allowed = oot.parseMessage(betMessage, p1);
+		}
+		assertFalse(allowed);
 	}
 	
 	private class WrongObserver implements Observer {
@@ -162,6 +196,5 @@ public class GameTest {
 		public void onStateChanged(StateMessage newState) {
 		
 		}
-		
 	}
 }

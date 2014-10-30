@@ -15,6 +15,10 @@ public class mockPlayer extends Player {
 	public mockPlayer() {
 		super("user", "user@example.com", new mockClient(), 100);
 	}
+	
+	public mockPlayer(String username) {
+		super(username, "user@example.com", new mockClient(), 100);
+	}
 
 	@Override
 	public void addCardToHand(Card card) {

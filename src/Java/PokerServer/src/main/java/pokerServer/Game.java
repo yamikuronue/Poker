@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import pokerServer.ActionMessage.Action;
 import pokerServer.StateMessage.StateType;
 import pokerServer.interfaces.Observable;
 import pokerServer.interfaces.Observer;
@@ -21,6 +22,7 @@ public class Game implements Observable {
 	protected Integer ID;
 	private ArrayList<StateObserver> observers;
 	private HashMap<Integer, Player> players;
+	private HashMap<Integer, Player> stillInGame;
 	private GameState state;
 	private ArrayList<Card> deck;
 	private Random rand;
@@ -74,21 +76,102 @@ public class Game implements Observable {
 			if (!players.containsKey(i)) {
 				players.put(i, player);
 				if (state == GameState.WAITING_FOR_PLAYERS && players.size() >= PokerServer.MIN_PLAYERS_PER_GAME) {
-					dealHands();
+					startGame();
 				}
 				return true;
 			};
 		}
 		
-		
-		
 		return false;
+	}
+	
+	/**
+	 * Parse a message representing an action to be taken
+	 * @param am The message
+	 * @param player The player taking the action
+	 * @return True if the action was taken, false if not. 
+	 */
+	public boolean parseMessage(ActionMessage am, Player player) {
+		//Check if the player can act
+		if (player != currentActor) {
+			return false;
+		}
+		
+		int position = getPositionFor(player);
+		
+		//That just leaves betting and folding
+		if (am.action == Action.FOLD) {
+			stillInGame.remove(position);
+			
+			//Check for end of game resulting from this action
+			if (stillInGame.size() <= 1) {
+				calculateWinner();
+			}
+		} else if (am.action == Action.BET){
+			//Betting
+			Integer amount = (Integer) am.getParameter("Amount");
+			
+			//Player already checked if they have enough
+			//So we just add it to the pot
+			pot += amount;			 
+		} else {
+			return false;
+		}
+		
+		//Continue on
+		currentActor = getNextValidPlayer(position);
+		messageStateChanged();
+		return true;
+	}
+	
+	private Player getNextValidPlayer(int lastPosition) {
+		for (int i = lastPosition; i <= stillInGame.size(); i++) {
+			if (stillInGame.containsKey(i)) {
+				return stillInGame.get(i);
+			}
+		}
+		
+		//Wrap around
+		for (int i = 0; i <= lastPosition; i++) {
+			if (stillInGame.containsKey(i)) {
+				return stillInGame.get(i);
+			}
+		}
+		
+		throw new IllegalStateException("No players can act!");
+	}
+
+	private void startGame() {
+		//Game starts! 
+		stillInGame = new HashMap<Integer,Player>();
+		for (int i = 0; i < players.size(); i++) {
+			stillInGame.put(i, players.get(i));
+		}
+		
+		//Pick dealer
+		int lastDealerPosition = 0;
+		if (dealer != null) {
+			lastDealerPosition = getPositionFor(dealer);
+			dealer = null;
+		}
+		
+		dealer = getNextValidPlayer(lastDealerPosition+1);
+		
+		//null out other variables
+		tableCards = new ArrayList<Card>();
+		lastAction = null;
+		pot = 0;
+		deck = Card.generateDeck();
+				
+		//Dealers left goes first
+		currentActor = getNextValidPlayer(lastDealerPosition+2);
+		
+		//Start with betting
+		state = GameState.PLAYING;
+		messageStateChanged();
 	}
 
 	private void dealHands() {
-		// Shuffle deck
-		deck = Card.generateDeck();
-		
 		//Deal each player two cards
 		for (int i = 0; i < players.size(); i++) {
 			Card card = deck.remove(rand.nextInt(deck.size()));
@@ -98,10 +181,19 @@ public class Game implements Observable {
 			players.get(i).addCardToHand(card);
 		}
 		
-		//and tell them all they can bet
-		state = GameState.BETTING;
 		messageStateChanged();
+	}
+	
+	private void dealTableCard() {
+		Card card = deck.remove(rand.nextInt(deck.size()));
+		tableCards.add(card);
+		messageStateChanged();
+	}
+	
+	private void calculateWinner() {
+		//TODO
 		
+		messageStateChanged();
 	}
 	
 	private void messageStateChanged() {		
@@ -111,7 +203,7 @@ public class Game implements Observable {
 		//Static elements
 		message.addParameter("Pot", pot);
 		message.addParameter("Dealer", dealer);
-		message.addParameter("Actor", currentActor);
+		message.addParameter("Actor", currentActor.getUsername());
 		message.addParameter("TableCards", tableCards);
 		message.addParameter("LastAction", lastAction);
 		
@@ -165,15 +257,7 @@ public class Game implements Observable {
 		return false;
 	}
 
-	/**
-	 * Parse a message representing an action to be taken
-	 * @param am The message
-	 * @return True if the action was taken, false if not. 
-	 */
-	public boolean parseMessage(ActionMessage am) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Coming soon");
-	}
+	
 	
 	/**
 	 * The potential states a game can be in
@@ -183,12 +267,8 @@ public class Game implements Observable {
 	public enum GameState {
 		/**Waiting for more players to join before starting **/
 		WAITING_FOR_PLAYERS,
-		/**Dealing out hands **/
-		DEALING,
-		/**Waiting for bets to be placed **/
-		BETTING,
-		/**Calculating the winner **/
-		END_GAME
+		/** Game in progress **/
+		PLAYING
 	}
 
 }
