@@ -104,6 +104,8 @@ public class GameTest {
 		
 		assertTrue(oot.addPlayer(p1));
 		assertFalse(oot.addPlayer(p2));
+		
+		PokerServer.MAX_PLAYERS_PER_GAME = 6; //cleanup
 	}
 	
 	/**
@@ -167,8 +169,8 @@ public class GameTest {
 		
 		oot.addObserver(p1);
 		oot.addObserver(p2);
-		oot.addPlayer(p1);
-		oot.addPlayer(p2);
+		assertTrue(oot.addPlayer(p1));
+		assertTrue(oot.addPlayer(p2));
 		
 		ActionMessage betMessage = new ActionMessage(Action.BET, null);
 		betMessage.addParameter("Amount", 100);

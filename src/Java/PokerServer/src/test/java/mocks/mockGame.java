@@ -55,7 +55,8 @@ public class mockGame extends Game {
 		return actionReturnValue;
 	}
 	
-	public boolean parseMessage(ActionMessage message) {
+	@Override
+	public boolean parseMessage(ActionMessage message, Player player) {
 		this.lastActionMessage = message;
 		return actionReturnValue;
 	}
