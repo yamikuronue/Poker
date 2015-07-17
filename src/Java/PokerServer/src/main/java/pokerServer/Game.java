@@ -11,7 +11,7 @@ import pokerServer.interfaces.Observer;
 import pokerServer.interfaces.StateObserver;
 
 /**
- * Instances of the class “Game” shall represent a single game currently in progress. 
+ * Instances of the class ï¿½Gameï¿½ shall represent a single game currently in progress. 
  * It shall handle the turns of the game, including enforcing the business rules. 
  * There is the possibility of observing a game without being a player in it, though no client currently implements this behavior.
  * @author bgreen
@@ -125,7 +125,7 @@ public class Game implements Observable {
 	}
 	
 	private Player getNextValidPlayer(int lastPosition) {
-		for (int i = lastPosition; i <= stillInGame.size(); i++) {
+		for (int i = lastPosition+1; i <= stillInGame.size(); i++) {
 			if (stillInGame.containsKey(i)) {
 				return stillInGame.get(i);
 			}

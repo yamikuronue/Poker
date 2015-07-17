@@ -234,6 +234,44 @@ public class GameTest {
 		assertFalse(allowed);
 	}
 	
+	/**
+	 * Test the first bet
+	 */
+	@Test
+	public void rightPlayerCanBet() {
+		mockPlayer p1 = new mockPlayer("Player1");
+		mockPlayer p2 = new mockPlayer("Player2");
+		Game oot = new Game();
+		
+		PokerServer.MIN_PLAYERS_PER_GAME = 2;
+		
+		oot.addObserver(p1);
+		oot.addObserver(p2);
+		assertTrue(oot.addPlayer(p1));
+		assertTrue(oot.addPlayer(p2));
+		
+		ActionMessage betMessage = new ActionMessage(Action.BET, null);
+		betMessage.addParameter("Amount", 100);
+		betMessage.addParameter("All-in", false);
+		
+		//GRab the message
+		StateMessage gameStartMessage = (StateMessage) p1.lastStateMessage;
+		assertTrue("Game did not start!",gameStartMessage != null);
+		
+		String actor = (String) gameStartMessage.getParameter("Actor");
+		boolean allowed;
+		mockPlayer better = actor.equalsIgnoreCase("Player1") ? p1 : p2;
+		mockPlayer other = actor.equalsIgnoreCase("Player1") ? p2 : p1;
+
+		assertTrue(oot.parseMessage(betMessage, better));
+		
+		StateMessage nextPlayerMessage = (StateMessage) other.lastStateMessage;
+		assertFalse(nextPlayerMessage.equals(gameStartMessage));
+		String actor2 = (String) nextPlayerMessage.getParameter("Actor");
+		assertFalse("Wrong actor signalled; received " + actor2, actor.equalsIgnoreCase(actor2));
+		
+	}
+	
 	private class WrongObserver implements Observer {
 		
 	}
