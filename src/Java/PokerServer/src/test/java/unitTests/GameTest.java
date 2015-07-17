@@ -6,6 +6,8 @@ package unitTests;
 import static org.junit.Assert.*;
 import mocks.mockPlayer;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import pokerServer.ActionMessage;
@@ -22,6 +24,9 @@ import pokerServer.interfaces.StateObserver;
  *
  */
 public class GameTest {
+	
+	int oldMinPlayers;
+	int oldMaxPlayers;
 
 	/**
 	 * Observer can be added to a game
@@ -32,6 +37,18 @@ public class GameTest {
 		Game oot = new Game();
 		
 		assertTrue(oot.addObserver(observer));
+	}
+	
+	@Before
+	public void setup() {
+		oldMinPlayers = PokerServer.MIN_PLAYERS_PER_GAME;
+		oldMaxPlayers = PokerServer.MAX_PLAYERS_PER_GAME;
+	}
+	
+	@After
+	public void teardown() {
+		PokerServer.MAX_PLAYERS_PER_GAME = oldMaxPlayers;
+		PokerServer.MIN_PLAYERS_PER_GAME = oldMinPlayers;
 	}
 	
 	/**
@@ -132,6 +149,33 @@ public class GameTest {
 	}
 	
 	/**
+	 * Player position can be obtained
+	 */
+	@Test
+	public void playerPosition() {
+		Player p = new mockPlayer();
+		Game oot = new Game();
+		
+		oot.addPlayer(p);
+		
+		assertEquals(new Integer(0), oot.getPositionFor(p));
+	}
+	
+	/**
+	 * Player position cannot be obtained for the wrong player
+	 */
+	@Test
+	public void playerPositionInvalidPlayer() {
+		Player p = new mockPlayer();
+		Player p1 = new mockPlayer();
+		Game oot = new Game();
+		
+		oot.addPlayer(p);
+		
+		assertEquals(null, oot.getPositionFor(p1));
+	}
+	
+	/**
 	 * When enough players have joined, they are each dealt two cards.
 	 */
 	@Test
@@ -178,6 +222,8 @@ public class GameTest {
 		
 		//GRab the message
 		StateMessage gameStartMessage = (StateMessage) p1.lastStateMessage;
+		assertTrue("Game did not start!",gameStartMessage != null);
+		
 		String actor = (String) gameStartMessage.getParameter("Actor");
 		boolean allowed;
 		if (actor.equalsIgnoreCase("Player1")) {
