@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import pokerServer.ActionMessage;
 import pokerServer.Game;
+import pokerServer.Game.GameState;
 import pokerServer.Player;
 import pokerServer.PokerServer;
 import pokerServer.StateMessage;
@@ -259,7 +260,6 @@ public class GameTest {
 		assertTrue("Game did not start!",gameStartMessage != null);
 		
 		String actor = (String) gameStartMessage.getParameter("Actor");
-		boolean allowed;
 		mockPlayer better = actor.equalsIgnoreCase("Player1") ? p1 : p2;
 		mockPlayer other = actor.equalsIgnoreCase("Player1") ? p2 : p1;
 
@@ -269,6 +269,135 @@ public class GameTest {
 		assertFalse(nextPlayerMessage.equals(gameStartMessage));
 		String actor2 = (String) nextPlayerMessage.getParameter("Actor");
 		assertFalse("Wrong actor signalled; received " + actor2, actor.equalsIgnoreCase(actor2));
+		
+	}
+	
+	/**
+	 * Test folding
+	 */
+	@Test
+	public void rightPlayerCanFold() {
+		mockPlayer p1 = new mockPlayer("Player1");
+		mockPlayer p2 = new mockPlayer("Player2");
+		Game oot = new Game();
+		
+		PokerServer.MIN_PLAYERS_PER_GAME = 2;
+		
+		oot.addObserver(p1);
+		oot.addObserver(p2);
+		assertTrue(oot.addPlayer(p1));
+		assertTrue(oot.addPlayer(p2));
+		
+		ActionMessage foldMessage = new ActionMessage(Action.FOLD, null);
+		
+		//GRab the message
+		StateMessage gameStartMessage = (StateMessage) p1.lastStateMessage;
+		assertTrue("Game did not start!",gameStartMessage != null);
+		
+		String actor = (String) gameStartMessage.getParameter("Actor");
+		mockPlayer better = actor.equalsIgnoreCase("Player1") ? p1 : p2;
+		mockPlayer other = actor.equalsIgnoreCase("Player1") ? p2 : p1;
+
+		assertTrue(oot.parseMessage(foldMessage, better));
+		
+		StateMessage nextPlayerMessage = (StateMessage) other.lastStateMessage;
+		assertFalse(nextPlayerMessage.equals(gameStartMessage));
+		
+		
+	}
+	
+	/**
+	 * Test folding
+	 */
+	@Test
+	public void gameProgresses() {
+		mockPlayer p1 = new mockPlayer("Player1");
+		mockPlayer p2 = new mockPlayer("Player2");
+		Game oot = new Game();
+		
+		PokerServer.MIN_PLAYERS_PER_GAME = 2;
+		
+		oot.addObserver(p1);
+		oot.addObserver(p2);
+		assertTrue(oot.addPlayer(p1));
+		assertTrue(oot.addPlayer(p2));
+		
+		ActionMessage betMessage = new ActionMessage(Action.BET, null);
+		betMessage.addParameter("Amount", 100);
+		betMessage.addParameter("All-in", false);
+		
+		//GRab the message
+		StateMessage gameStartMessage = (StateMessage) p1.lastStateMessage;
+		assertTrue("Game did not start!",gameStartMessage != null);
+		
+		String actor = (String) gameStartMessage.getParameter("Actor");
+		mockPlayer better = actor.equalsIgnoreCase("Player1") ? p1 : p2;
+		mockPlayer other = actor.equalsIgnoreCase("Player1") ? p2 : p1;
+
+		assertTrue(oot.parseMessage(betMessage, better));
+		
+		//Player one bets
+		StateMessage nextPlayerMessage = (StateMessage) other.lastStateMessage;
+		assertFalse(nextPlayerMessage.equals(gameStartMessage));
+		String actor2 = (String) nextPlayerMessage.getParameter("Actor");
+		assertFalse("Wrong actor signalled; received " + actor2, actor.equalsIgnoreCase(actor2));
+		
+		//Player two bets
+		assertTrue(oot.parseMessage(betMessage, other));
+		
+		//Cards are dealt
+		assertEquals(oot.state, GameState.PREFLOP);
+		StateMessage handMessage = (StateMessage) better.lastStateMessage;
+		assertEquals(handMessage.getParameter("Actor"), better.getUsername());
+		
+		
+		//Another round of betting
+		assertTrue(oot.parseMessage(betMessage, better));
+		handMessage = (StateMessage) better.lastStateMessage;
+		
+		assertEquals(handMessage.getParameter("Actor"), other.getUsername());
+		assertTrue(oot.parseMessage(betMessage, other));
+		
+		//Cards are dealt to table 
+		assertEquals(oot.state, GameState.FLOP);
+		handMessage = (StateMessage) better.lastStateMessage;
+		assertEquals(handMessage.getParameter("Actor"), better.getUsername());
+		
+		//Another round of betting
+		assertTrue(oot.parseMessage(betMessage, better));
+		handMessage = (StateMessage) better.lastStateMessage;
+		
+		assertEquals(handMessage.getParameter("Actor"), other.getUsername());
+		assertTrue(oot.parseMessage(betMessage, other));
+		
+		//Cards are dealt to table 
+		assertEquals(oot.state, GameState.TURN);
+		handMessage = (StateMessage) better.lastStateMessage;
+		assertEquals(handMessage.getParameter("Actor"), better.getUsername());
+		
+		//Another round of betting
+		assertTrue(oot.parseMessage(betMessage, better));
+		handMessage = (StateMessage) better.lastStateMessage;
+		
+		assertEquals(handMessage.getParameter("Actor"), other.getUsername());
+		assertTrue(oot.parseMessage(betMessage, other));
+		
+		//Cards are dealt to table 
+		assertEquals(oot.state, GameState.RIVER);
+		handMessage = (StateMessage) better.lastStateMessage;
+		assertEquals(handMessage.getParameter("Actor"), better.getUsername());
+		
+		//Another round of betting
+		assertTrue(oot.parseMessage(betMessage, better));
+		handMessage = (StateMessage) better.lastStateMessage;
+		
+		assertEquals(handMessage.getParameter("Actor"), other.getUsername());
+		assertTrue(oot.parseMessage(betMessage, other));
+		
+		//Showdown
+		assertEquals(oot.state, GameState.ANTE);
+		handMessage = (StateMessage) better.lastStateMessage;
+		assertEquals(handMessage.getParameter("Actor"), better.getUsername());
 		
 	}
 	

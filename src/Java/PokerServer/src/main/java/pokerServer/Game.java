@@ -23,7 +23,7 @@ public class Game implements Observable {
 	private ArrayList<StateObserver> observers;
 	private HashMap<Integer, Player> players;
 	private HashMap<Integer, Player> stillInGame;
-	private GameState state;
+	public GameState state;
 	private ArrayList<Card> deck;
 	private Random rand;
 	private Integer pot;
@@ -32,10 +32,12 @@ public class Game implements Observable {
 	private ArrayList<Card> tableCards;
 	private ActionMessage lastAction;
 	
+	private boolean useAnte;
+	
 	/**
 	 * Create a new game and add it to the list
 	 */
-	public Game() {
+	public Game(boolean ante) {
 		ID = PokerServer.addGame(this);
 		observers = new ArrayList<StateObserver>();
 		players = new HashMap<Integer, Player>();
@@ -43,6 +45,11 @@ public class Game implements Observable {
 		this.rand = new Random();
 		this.pot = 0;
 		this.tableCards = new ArrayList<Card>();
+		useAnte = ante;
+	}
+	
+	public Game() {
+		this(true);
 	}
 	
 	@Override
@@ -76,7 +83,7 @@ public class Game implements Observable {
 			if (!players.containsKey(i)) {
 				players.put(i, player);
 				if (state == GameState.WAITING_FOR_PLAYERS && players.size() >= PokerServer.MIN_PLAYERS_PER_GAME) {
-					startGame();
+					advanceState();
 				}
 				return true;
 			};
@@ -113,13 +120,18 @@ public class Game implements Observable {
 			
 			//Player already checked if they have enough
 			//So we just add it to the pot
-			pot += amount;			 
+			pot += amount;
+			
 		} else {
 			return false;
 		}
 		
 		//Continue on
 		currentActor = getNextValidPlayer(position);
+		//If the next player is the dealer, advance the state
+		if (currentActor == dealer) {
+			advanceState();
+		}
 		messageStateChanged();
 		return true;
 	}
@@ -167,8 +179,51 @@ public class Game implements Observable {
 		currentActor = getNextValidPlayer(lastDealerPosition+2);
 		
 		//Start with betting
-		state = GameState.PLAYING;
+		state = GameState.ANTE;
+		
+		if (!useAnte) advanceState();
+		
 		messageStateChanged();
+	}
+	
+	private void advanceState() {
+		switch(state) {
+		case ANTE:
+			//After the ante, we deal hands
+			dealHands();
+			state = GameState.PREFLOP;
+			break;
+		case PREFLOP:
+			//After the preflop, we do the flop
+			dealTableCard();
+			dealTableCard();
+			dealTableCard();
+			state = GameState.FLOP;
+			break;
+		case FLOP:
+			//After the flop comes the Turn
+			dealTableCard();
+			state = GameState.TURN;
+			break;
+		case TURN:
+			//After the turn comes the River
+			dealTableCard();
+			state = GameState.RIVER;
+			break;
+		case RIVER:
+		case SHOWDOWN:
+			//Game is over
+			calculateWinner();
+			state = GameState.ANTE;
+			break;
+		case WAITING_FOR_PLAYERS:
+			startGame();
+			break;
+		default:
+			//We get into a better state
+			state = GameState.WAITING_FOR_PLAYERS;
+			break;
+		}
 	}
 
 	private void dealHands() {
@@ -181,13 +236,13 @@ public class Game implements Observable {
 			players.get(i).addCardToHand(card);
 		}
 		
-		messageStateChanged();
+		//messageStateChanged();
 	}
 	
 	private void dealTableCard() {
 		Card card = deck.remove(rand.nextInt(deck.size()));
 		tableCards.add(card);
-		messageStateChanged();
+		//messageStateChanged();
 	}
 	
 	private void calculateWinner() {
@@ -267,8 +322,18 @@ public class Game implements Observable {
 	public enum GameState {
 		/**Waiting for more players to join before starting **/
 		WAITING_FOR_PLAYERS,
-		/** Game in progress **/
-		PLAYING
+		/**Betting before any cards are dealt**/
+		ANTE,
+		/**Betting after cards in hand**/
+		PREFLOP,
+		/**Betting after the flop**/
+		FLOP,
+		/**Betting after the turn**/
+		TURN,
+		/**Betting after the river**/
+		RIVER,
+		/**Final hands**/
+		SHOWDOWN
 	}
 
 }
